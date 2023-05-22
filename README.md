@@ -1,1 +1,1 @@
-# PTZ_mouse_RNA-Seq
+# PTZ mouse RNA-Seq  
