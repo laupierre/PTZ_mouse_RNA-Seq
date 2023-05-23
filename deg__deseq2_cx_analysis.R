@@ -53,3 +53,56 @@ samples.s <- samples.s[idx, ]
 samples.s$condition [grepl ("Z", samples.s$condition)] <- "PTZ"
 samples.s$condition [grepl ("C", samples.s$condition)] <- "CT"
 stopifnot (samples.s$sample == colnames (counts.s))
+
+
+## DESeq2 
+dds <- DESeqDataSetFromMatrix(countData = round (counts.s), colData = samples.s, design = ~ condition)
+                                 
+# keep <- rowSums(counts(dds)) >= 30
+keep <- rowSums(counts(dds) >= 30) >= dim (counts.s)[2]/2
+dds <- dds[keep,]
+dds
+
+
+dds <- DESeq(dds)
+resultsNames(dds)
+# condition_PTZ_vs_CT
+
+res <- results(dds, contrast=list("condition_PTZ_vs_CT"))
+
+res <- merge (data.frame (res), counts (dds), by="row.names")
+#res <- merge (data.frame (res), round (counts (dds, normalized=TRUE)), by="row.names")
+res <- merge (res, annot, by.x="Row.names", by.y="Geneid")
+colnames (res)[1] <- "Geneid"
+res <- resa <- res[order (res$padj), ]
+
+write.xlsx (res, "PTZ_CX_differential_expression.xlsx", rowNames=F)
+
+boxplot (res$log2FoldChange)
+abline (h=0)
+
+
+
+## PCA plot
+
+vsd <- vst(dds, blind=FALSE)
+pcaData <- plotPCA(vsd, intgroup=c("condition"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+ggplot(pcaData, aes(PC1, PC2, color=condition, shape=condition)) +
+  		geom_point(size=3) +
+  		xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  		ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+		coord_fixed () + geom_label_repel (aes(label = name))
+
+ggsave ("PCA plot PTZ CX experiment.pdf")
+
+
+
+
+
+
+
+
+
+
