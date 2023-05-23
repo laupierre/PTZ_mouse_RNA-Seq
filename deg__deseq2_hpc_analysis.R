@@ -3,6 +3,7 @@
 library (openxlsx)
 library (DESeq2)
 library (ggplot2)
+library(ggrepel)
 
 
 ## See Github RNA-Seq_mouse/gene_annotation.R
@@ -92,7 +93,7 @@ ggplot(pcaData, aes(PC1, PC2, color=condition, shape=condition)) +
   		geom_point(size=3) +
   		xlab(paste0("PC1: ",percentVar[1],"% variance")) +
   		ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
-		coord_fixed ()
+		coord_fixed () + geom_label_repel (aes(label = name))
 
 ggsave ("PCA plot PTZ HPC experiment.pdf")
 
