@@ -49,8 +49,36 @@ samples.s <- samples[samples$area == "HPC", ]
 counts.s <- counts[ ,colnames (counts) %in% row.names (samples.s)]
 idx <- match (samples.s$sample, colnames (counts.s))
 samples.s <- samples.s[idx, ]
+samples.s$condition [grepl ("Z", samples.s$condition)] <- "PTZ"
+samples.s$condition [grepl ("C", samples.s$condition)] <- "CT"
 stopifnot (samples.s$sample == colnames (counts.s))
 
+
+## DESeq2 
+dds <- DESeqDataSetFromMatrix(countData = round (counts.s), colData = samples.s, design = ~ condition)
+                                 
+# keep <- rowSums(counts(dds)) >= 30
+keep <- rowSums(counts(dds) >= 30) >= dim (counts.s)[2]/2
+dds <- dds[keep,]
+dds
+
+
+dds <- DESeq(dds)
+resultsNames(dds)
+# condition_PTZ_vs_CT
+
+res <- results(dds, contrast=list("condition_PTZ_vs_CT"))
+
+res <- merge (data.frame (res), counts (dds), by="row.names")
+#res <- merge (data.frame (res), round (counts (dds, normalized=TRUE)), by="row.names")
+res <- merge (res, annot, by.x="Row.names", by.y="Geneid")
+colnames (res)[1] <- "Geneid"
+res <- resa <- res[order (res$padj), ]
+
+write.xlsx (res, "PTZ_HPC_differential_expression.xlsx", rowNames=F)
+
+boxplot (res$log2FoldChange)
+abline (h=0)
 
 
 
