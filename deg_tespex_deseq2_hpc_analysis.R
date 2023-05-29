@@ -52,6 +52,7 @@ tesp$transname <- gsub ("#.*", "", row.names (tesp))
 tesp$transname <- transname <- gsub ("_[3|5|o].*", "", tesp$transname)
 
 transfamily <- gsub (".*/", "", row.names (tesp))
+tesp <- tesp[ ,grep ("IIT", colnames (tesp))]
 annot_trans <- unique (data.frame (cbind (transname, transfamily)))
 
 
