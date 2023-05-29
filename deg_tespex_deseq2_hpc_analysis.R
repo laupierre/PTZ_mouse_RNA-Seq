@@ -52,7 +52,7 @@ tesp$transname <- gsub ("#.*", "", row.names (tesp))
 tesp$transname <- transname <- gsub ("_[3|5|o].*", "", tesp$transname)
 
 transfamily <- gsub (".*/", "", row.names (tesp))
-tesp <- tesp[ ,grep ("IIT", colnames (tesp))]
+#tesp <- tesp[ ,grep ("IIT", colnames (tesp))]
 annot_trans <- unique (data.frame (cbind (transname, transfamily)))
 
 
@@ -62,6 +62,7 @@ tesp <- data.frame (tesp %>% group_by (transname) %>% summarise(across(everythin
 # same as in base: tesp <- aggregate(. ~ transname, tesp, sum)
 # data.frame (t (tesp[tesp$transname == "L1MdA_II", ]))
 
+colnames (tesp) <- gsub ("IIT_RPZ_", "", colnames (tesp))
 colnames (tesp) <- gsub ("_S.*", "", colnames (tesp))
 row.names (tesp) <- tesp[ ,1]
 tesp <- tesp[ ,-1]
@@ -96,7 +97,6 @@ dds <- DESeqDataSetFromMatrix(countData = round (counts.s), colData = samples.s,
 keep <- rowSums(counts(dds) >= 30) >= dim (counts.s)[2]/2
 dds <- dds[keep,]
 dds
-
 
 dds <- DESeq(dds)
 resultsNames(dds)
