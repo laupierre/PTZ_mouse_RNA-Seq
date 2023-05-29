@@ -82,8 +82,9 @@ samples.s <- samples[samples$area == "HPC", ]
 counts.s <- counts[ ,colnames (counts) %in% row.names (samples.s)]
 idx <- match (samples.s$sample, colnames (counts.s))
 samples.s <- samples.s[idx, ]
-samples.s$condition [grepl ("Z", samples.s$condition)] <- "PTZ"
-samples.s$condition [grepl ("C", samples.s$condition)] <- "CT"
+samples.s$condition <- gsub ("_[^_]*$", "", samples.s$sample)
+samples.s$condition [grepl ("PTZ", samples.s$condition)] <- "PTZ"
+samples.s$condition [grepl ("_C", samples.s$condition)] <- "CT"
 stopifnot (samples.s$sample == colnames (counts.s))
 
 
@@ -104,11 +105,23 @@ res <- results(dds, contrast=list("condition_PTZ_vs_CT"))
 
 res <- merge (data.frame (res), counts (dds), by="row.names")
 #res <- merge (data.frame (res), round (counts (dds, normalized=TRUE)), by="row.names")
-res <- merge (res, annot, by.x="Row.names", by.y="Geneid")
+res <- merge (res, annot, by.x="Row.names", by.y="Geneid", all.x= TRUE)
 colnames (res)[1] <- "Geneid"
 res <- resa <- res[order (res$padj), ]
 
-write.xlsx (res, "PTZ_HPC_differential_expression.xlsx", rowNames=F)
+idx2 <- which (is.na (res$external_gene_name))
+res$external_gene_name [idx2] <- res$Geneid[is.na (res$external_gene_name)]
+res$gene_name [idx2] <- res$Geneid[idx2]
+res$gene_type [idx2] <- "transposon"
+
+for (i in (1:dim (res)[1])) {
+if (res$gene_type[i] == "transposon") {
+#print (res$gene_name[i])
+res$description[i]  <- annot_trans$transfamily [annot_trans$transname == res$gene_name[i]]
+}
+}
+
+write.xlsx (res, "PTZ_HPC_differential_expression_with_transposons.xlsx", rowNames=F)
 
 boxplot (res$log2FoldChange)
 abline (h=0)
