@@ -79,7 +79,7 @@ counts <- rbind (counts, tesp)
 
 
 
-## HPC area
+## CX area
 
 samples.s <- samples[samples$area == "CX", ]
 counts.s <- counts[ ,colnames (counts) %in% row.names (samples.s)]
@@ -123,7 +123,7 @@ res$description[i]  <- annot_trans$transfamily [annot_trans$transname == res$gen
 }
 }
 
-write.xlsx (res, "PTZ_HPC_differential_expression_with_transposons.xlsx", rowNames=F)
+write.xlsx (res, "PTZ_CX_differential_expression_with_transposons.xlsx", rowNames=F)
 
 boxplot (res$log2FoldChange)
 abline (h=0)
@@ -142,4 +142,4 @@ ggplot(pcaData, aes(PC1, PC2, color=condition, shape=condition)) +
   		ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
 		coord_fixed () + geom_label_repel (aes(label = name))
 
-ggsave ("PCA plot PTZ HPC experiment.pdf")
+ggsave ("PCA plot PTZ CX experiment.pdf")
