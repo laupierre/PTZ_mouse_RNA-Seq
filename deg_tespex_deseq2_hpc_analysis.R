@@ -84,7 +84,7 @@ idx <- match (samples.s$sample, colnames (counts.s))
 samples.s <- samples.s[idx, ]
 samples.s$condition <- gsub ("_[^_]*$", "", samples.s$sample)
 samples.s$condition [grepl ("PTZ", samples.s$condition)] <- "PTZ"
-samples.s$condition [grepl ("_C", samples.s$condition)] <- "CT"
+samples.s$condition [grepl ("C", samples.s$condition)] <- "CT"
 stopifnot (samples.s$sample == colnames (counts.s))
 
 
