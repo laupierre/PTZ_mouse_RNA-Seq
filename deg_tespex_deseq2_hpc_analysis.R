@@ -78,6 +78,14 @@ stopifnot (colnames (tesp) == samples$sample)
 counts <- rbind (counts, tesp)
 
 
+## Remove some samples
+
+torm <- "PTZ2_HPC"
+counts <- counts[ ,grep (torm, colnames (counts), invert=TRUE)]
+
+samples <- samples[grep (torm, samples$sample, invert=TRUE), ]
+
+
 ## HPC area
 
 samples.s <- samples[samples$area == "HPC", ]
@@ -122,7 +130,7 @@ res$description[i]  <- annot_trans$transfamily [annot_trans$transname == res$gen
 }
 }
 
-write.xlsx (res, "PTZ_HPC_differential_expression_with_transposons.xlsx", rowNames=F)
+write.xlsx (res, "PTZ_HPC_differential_expression_with_transposons_version2.xlsx", rowNames=F)
 
 boxplot (res$log2FoldChange)
 abline (h=0)
