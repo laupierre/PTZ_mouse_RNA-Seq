@@ -78,6 +78,14 @@ stopifnot (colnames (tesp) == samples$sample)
 counts <- rbind (counts, tesp)
 
 
+## Remove some samples
+
+torm <- "PTZ3_CBM"
+counts <- counts[ ,grep (torm, colnames (counts), invert=TRUE)]
+
+samples <- samples[grep (torm, samples$sample, invert=TRUE), ]
+
+
 
 ## CBM area
 
@@ -123,7 +131,7 @@ res$description[i]  <- annot_trans$transfamily [annot_trans$transname == res$gen
 }
 }
 
-write.xlsx (res, "PTZ_CBM_differential_expression_with_transposons.xlsx", rowNames=F)
+write.xlsx (res, "PTZ_CBM_differential_expression_with_transposons_version2.xlsx", rowNames=F)
 
 boxplot (res$log2FoldChange)
 abline (h=0)
